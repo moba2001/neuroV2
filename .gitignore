@@ -1,2 +1,3 @@
 input
 keras_to_snn_params.npz
+keras_to_snn_big_params.npz
