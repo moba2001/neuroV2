@@ -27,6 +27,24 @@ python training_nengo.py
 to train and evaluate the nengo model.
 Image size as well as the ensemble size can be set by setting the variables `input_width`, `input_height` as well as `n_hid`.
 
+### Nengo CNN
+
+The notebook
+```shell
+cnn_nengo_training.ipynb
+```
+can be used to train and tune a nengo cnn.
+Image size can be set by setting the variables `input_width`, `input_height`. It is adviced to not create huge networks as the simulation is resource draining.
+
+### Classic CNN
+
+The notebook
+```shell
+cnn_training.ipynb and cnn_dropout_training.ipynb
+```
+can be used to train the different cnn models.
+Image size can be set by setting the variables `input_width`, `input_height`. For the generator simply comment the according line.
+
 ## Inference
 
 First kill the `leapd` process to get access to the cameras:
