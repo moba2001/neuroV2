@@ -64,9 +64,8 @@ with open("reverseloopup.pkl", "rb") as f:
 with open("reverseloopup_tf.pkl", "rb") as f:
     reverselookup_tf = pickle.load(f)
 
-model_aug = load_model('./my_model.h5')
-model = load_model('./my_model_wo_pre.h5')
-model_dropout = load_model('./my_model_w_dropout.h5')
+model = load_model('./my_model_small.h5')
+model_big = load_model('./my_model_medium.h5')
 
 model_nengo_cnn = NengoCNNPredictor(params_file="keras_to_snn_params", input_height=28, input_width=28)
 model_nengo_cnn_big = NengoCNNPredictor(params_file="keras_to_snn_big_params")
@@ -173,22 +172,17 @@ def show_frame():
             frame_queue.put(gray_frame.flatten())
 
         if frame_queue2.empty():
-            gray_frame = cv2.resize(frame, (input_width ,input_height), interpolation= cv2.INTER_LINEAR)
+            gray_frame = cv2.resize(frame, (28, 28), interpolation= cv2.INTER_LINEAR)
             gray_frame = gray_frame / 255 * 2 - 1
-            gray_frame = convert_img(gray_frame)
+            gray_frame = convert_img(gray_frame, width=28, height=28)
             frame_queue2.put(gray_frame)
 
         if frame_queue3.empty():
-            gray_frame = cv2.resize(frame, (input_width ,input_height), interpolation= cv2.INTER_LINEAR)
+            gray_frame = cv2.resize(frame, (160 ,60), interpolation= cv2.INTER_LINEAR)
             gray_frame = gray_frame / 255 * 2 - 1
-            gray_frame = convert_img(gray_frame)
+            gray_frame = convert_img(gray_frame, width=160, height=60)
             frame_queue3.put(gray_frame)
 
-        if frame_queue4.empty():
-            gray_frame = cv2.resize(frame, (input_width ,input_height), interpolation= cv2.INTER_LINEAR)
-            gray_frame = gray_frame / 255 * 2 - 1
-            gray_frame = convert_img(gray_frame)
-            frame_queue4.put(gray_frame)
         
         if frame_queue5.empty():
             gray_frame = preprocess_img_cnn_nengo(frame, width=28, height=28)
@@ -207,7 +201,6 @@ def show_frame():
         text_label1.config(text=o1.out)
         text_label2.config(text=o2.out)
         text_label3.config(text=o3.out)
-        text_label4.config(text=o4.out)
         text_label5.config(text=o5.out)
         text_label6.config(text=o6.out)
 
@@ -221,7 +214,6 @@ def close():
     print("Waiting for thread 2 to finish")
     t2.join()
     t3.join()
-    t4.join()
     t5.join()
     t6.join()
     leap.timeout = 0
@@ -233,7 +225,6 @@ def close():
 frame_queue = queue.Queue()
 frame_queue2 = queue.Queue()
 frame_queue3 = queue.Queue()
-frame_queue4 = queue.Queue()
 frame_queue5 = queue.Queue()
 frame_queue6 = queue.Queue()
 
@@ -246,10 +237,7 @@ o2 = ClassificationOutput()
 o2.name = "CNN"
 
 o3 = ClassificationOutput()
-o3.name = "CNN w Aug"
-
-o4 = ClassificationOutput()
-o4.name = "CNN w Dropout"
+o3.name = "CNN Big"
 
 o5 = ClassificationOutput()
 o5.name = "Nengo CNN"
@@ -259,15 +247,13 @@ o6.name = "Nengo CNN Big"
 
 t1 = threading.Thread(target=classify_nengo, args=(sim, frame_queue, o1), daemon=True)
 t2 = threading.Thread(target=classify_tf, args=(model, frame_queue2, o2), daemon=True)
-t3 = threading.Thread(target=classify_tf, args=(model_aug, frame_queue3, o3), daemon=True)
-t4 = threading.Thread(target=classify_tf, args=(model_dropout, frame_queue4, o4), daemon=True)
+t3 = threading.Thread(target=classify_tf, args=(model_big, frame_queue3, o3), daemon=True)
 t5 = threading.Thread(target=classify_tf, args=(model_nengo_cnn, frame_queue5, o5), daemon=True)
 t6 = threading.Thread(target=classify_tf, args=(model_nengo_cnn_big, frame_queue6, o6), daemon=True)
 
 t1.start()
 t2.start()
 t3.start()
-t4.start()
 t5.start()
 t6.start()
 
@@ -295,9 +281,6 @@ text_label2.pack(fill="x")
 
 text_label3 = tk.Label(window, text="Your Text Here", anchor='w')
 text_label3.pack(fill="x")
-
-text_label4 = tk.Label(window, text="Your Text Here", anchor='w')
-text_label4.pack(fill="x")
 
 text_label5 = tk.Label(window, text="Your Text Here", anchor='w')
 text_label5.pack(fill="x")
