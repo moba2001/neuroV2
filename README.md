@@ -40,7 +40,7 @@ Image size can be set by setting the variables `input_width`, `input_height`. It
 
 The notebook
 ```shell
-cnn_training.ipynb and cnn_dropout_training.ipynb
+cnn_small.ipynb, cnn_medium.ipynb or cnn_dropout_training.ipynb
 ```
 can be used to train the different cnn models.
 Image size can be set by setting the variables `input_width`, `input_height`. For the generator simply comment the according line.
